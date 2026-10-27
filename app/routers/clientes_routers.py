@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.schemas.cliente_schemas import ClienteResponse, CreateCliente
 
-from app.services.cliente_service import criar_cliente_service
+from app.services.cliente_service import criar_cliente_service, excluir_cliente_service 
 
 from app.database.database import get_db
 
@@ -25,3 +25,9 @@ def criar_cliente(cliente: CreateCliente, db: Session = Depends(get_db)):
 
     return cliente_criado
 
+@router.delete("/{cliente_id}")
+def excluir_cliente(
+    cliente_id: int,
+    db: Session = Depends(get_db)
+):
+    return excluir_cliente_service(cliente_id, db)

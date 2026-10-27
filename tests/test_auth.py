@@ -36,6 +36,43 @@ def test_criacao_de_conta_(cliente):
     assert "numero" in dados
     assert dados["tipo"] == "corrente"
 
+# Testes de exclusão de contas.
+# Verifica se o cliente autenticado foi excluido com sucesso.
+def test_excluir_cliente(cliente):
+    # 1. Cadastrar um cliente
+    dados_cliente = {
+        "cpf": "33333333333",
+        "senha_app": "12345",
+        "nome_completo": "Cliente Para Excluir",
+        "idade": 30,
+        "endereco": "Rua de Teste"
+    }
+
+    cadastro = cliente.post(
+        "/clientes/",
+        json=dados_cliente
+    )
+
+    assert cadastro.status_code in (200, 201), cadastro.text
+
+    # 2. Obter o ID do cliente cadastrado
+    cliente_id = cadastro.json()["id"]
+
+    # 3. Solicitar a exclusão do cliente
+    resposta = cliente.delete(
+        f"/clientes/{cliente_id}"
+    )
+
+    # 4. Verificar se a exclusão foi realizada
+    assert resposta.status_code == 200, resposta.text
+
+    # 5. Confirmar que o cliente não existe mais
+    consulta = cliente.get(
+        f"/clientes/{cliente_id}"
+    )
+
+    assert consulta.status_code == 405
+
 # Verifica se um cliente consegue acessar à propria conta, 
 # mas não consegue consultar a conta de outro titular.
 def test_acesso_indevido(cliente):
